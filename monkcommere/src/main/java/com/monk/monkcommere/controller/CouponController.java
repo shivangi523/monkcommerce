@@ -15,50 +15,53 @@ public class CouponController {
 
     private final CouponService service;
 
-
     public CouponController(CouponService service) {
         this.service = service;
     }
 
-    // STEP 1: Create a new coupon
-    // POST coupons
+    // 1. Create coupon
     @PostMapping
-    public Coupon createCoupon(@RequestBody CouponRequest req) {
-        return service.createCoupon(req);
+    public Coupon createCoupon(@RequestBody CouponRequest request) {
+        return service.createCoupon(request);
     }
 
-    // STEP 2: Get all coupons
-    // GET /coupons
+    // 2. Get all coupons
     @GetMapping
     public List<Coupon> getAllCoupons() {
         return service.getAllCoupons();
     }
 
-    // STEP 3: Get a single coupon by ID
-    // GET coupons/{id}
+    // 3. Get coupon by id
     @GetMapping("/{id}")
-    public Coupon getCoupon(@PathVariable Long id) {
+    public Coupon getCouponById(@PathVariable Long id) {
         return service.getCouponById(id);
     }
 
-    // STEP 4: Check if coupon is applicable on given cart
-    // POST /coupons/{id}/applicable
-    @PostMapping("/{id}/applicable")
-    public boolean checkApplicable(
-            @PathVariable Long id,
-            @RequestBody CartDto cart
-    ) {
-        return service.checkApplicable(id, cart);
+    // 4. Update coupon
+    @PutMapping("/{id}")
+    public Coupon updateCoupon(@PathVariable Long id, @RequestBody CouponRequest req) {
+        return service.updateCoupon(id, req);
     }
 
-    // STEP 5: Apply coupon (CART-WISE currently)
-    // POST /coupons/{id}/apply
-    @PostMapping("/{id}/apply")
+    // 5. Delete coupon
+    @DeleteMapping("/{id}")
+    public String deleteCoupon(@PathVariable Long id) {
+        service.deleteCoupon(id);
+        return "Coupon deleted successfully with ID: " + id;
+    }
+
+    // 6. Get all applicable coupons for a cart
+    @PostMapping("/applicable-coupons")
+    public List<ApplyResponse> getApplicableCoupons(@RequestBody CartDto cart) {
+        return service.getApplicableCoupons(cart);
+    }
+
+    // 7. Apply ANY coupon type (cartwise / productwise / bxgy)
+    @PostMapping("/apply-coupon/{id}")
     public ApplyResponse applyCoupon(
             @PathVariable Long id,
             @RequestBody CartDto cart
     ) {
-        return service.applyCartWise(id, cart);
+        return service.applyCoupon(id, cart);
     }
 }
-
