@@ -9,6 +9,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller for managing discount coupons.
+ *
+ * This controller exposes APIs to create, update, delete, and fetch coupons.
+ * It also includes endpoints to determine coupon applicability and
+ * apply coupons to a cart (cart-wise, product-wise, or BxGy).
+ *
+ */
 @RestController
 @RequestMapping("/coupons")
 public class CouponController {
@@ -19,44 +27,80 @@ public class CouponController {
         this.service = service;
     }
 
-    // 1. Create coupon
+    /**
+     * Create a new coupon.
+     *
+     * @param request the coupon creation payload
+     * @return the saved coupon
+     */
     @PostMapping
     public Coupon createCoupon(@RequestBody CouponRequest request) {
         return service.createCoupon(request);
     }
 
-    // 2. Get all coupons
+    /**
+     * Retrieve all coupons from the system.
+     *
+     * @return list of coupons
+     */
     @GetMapping
     public List<Coupon> getAllCoupons() {
         return service.getAllCoupons();
     }
 
-    // 3. Get coupon by id
+    /**
+     * Retrieve a coupon by its ID.
+     *
+     * @param id coupon ID
+     * @return coupon details
+     */
     @GetMapping("/{id}")
     public Coupon getCouponById(@PathVariable Long id) {
         return service.getCouponById(id);
     }
 
-    // 4. Update coupon
+    /**
+     * Update an existing coupon.
+     *
+     * @param id  coupon ID
+     * @param req updated coupon fields
+     * @return updated coupon object
+     */
     @PutMapping("/{id}")
     public Coupon updateCoupon(@PathVariable Long id, @RequestBody CouponRequest req) {
         return service.updateCoupon(id, req);
     }
 
-    // 5. Delete coupon
+    /**
+     * Delete a coupon by its ID.
+     *
+     * @param id coupon ID
+     * @return success message
+     */
     @DeleteMapping("/{id}")
     public String deleteCoupon(@PathVariable Long id) {
         service.deleteCoupon(id);
         return "Coupon deleted successfully with ID: " + id;
     }
 
-    // 6. Get all applicable coupons for a cart
+    /**
+     * Fetch all coupons that are applicable for the given cart.
+     *
+     * @param cart the cart details containing items and total amount
+     * @return list of applicable coupons with their calculated discount
+     */
     @PostMapping("/applicable-coupons")
     public List<ApplyResponse> getApplicableCoupons(@RequestBody CartDto cart) {
         return service.getApplicableCoupons(cart);
     }
 
-    // 7. Apply ANY coupon type (cartwise / productwise / bxgy)
+    /**
+     * Apply a coupon of ANY type (cart wise, product wise, bxgy) to the cart.
+     *
+     * @param id   coupon ID
+     * @param cart cart request body
+     * @return response containing discount and updated payable amount
+     */
     @PostMapping("/apply-coupon/{id}")
     public ApplyResponse applyCoupon(
             @PathVariable Long id,
